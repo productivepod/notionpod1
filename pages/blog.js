@@ -1,21 +1,14 @@
-import { getAllFilesFrontMatter } from '@/lib/mdx'
+import { Client } from '@notionhq/client'
 import siteMetadata from '@/data/siteMetadata'
 import ListLayout from '@/layouts/ListLayout'
 import { PageSEO } from '@/components/SEO'
-import { Client } from '@notionhq/client'
 
-export const POSTS_PER_PAGE = 5
-
-export async function getStaticProps() {
-  //console.log(getAllPostsNotion(process.env.NOTION_DB_ID));
-  //const posts = await getAllFilesFrontMatter('blog')
-  //const posts = await getAllPostsNotion(process.env.NOTION_DB_ID)
-
+export const getStaticProps = async () => {
   const notion = new Client({
     auth: process.env.NOTION_SECRET,
   })
 
-  const posts = await notion.databases.query({
+  const data = await notion.databases.query({
     database_id: process.env.NOTION_DB_ID,
     filter: {
       property: 'Published',
@@ -25,7 +18,7 @@ export async function getStaticProps() {
     },
   })
 
-  const notiondata = posts.results.map((post) => ({
+  const notiondata = data.results.map((post) => ({
     id: post.id,
     date: post.created_time,
     lastmod: post.last_edited_time,
@@ -36,16 +29,21 @@ export async function getStaticProps() {
     summary: 'abcd',
     layout: 'PostSimple',
   }))
+
   const initialDisplayPosts = notiondata.slice(0, POSTS_PER_PAGE)
+
   const pagination = {
     currentPage: 1,
-    totalPages: Math.ceil(posts.length / POSTS_PER_PAGE),
+    totalPages: Math.ceil(notiondata.length / POSTS_PER_PAGE),
   }
 
-  return { props: { initialDisplayPosts, posts, pagination } }
+  return { props: { initialDisplayPosts, posts: notiondata, pagination } }
 }
 
+export const POSTS_PER_PAGE = 5
+
 export default function Blog({ posts, initialDisplayPosts, pagination }) {
+  //console.log(posts);
   return (
     <>
       <PageSEO title={`Blog - ${siteMetadata.author}`} description={siteMetadata.description} />

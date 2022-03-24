@@ -1,34 +1,20 @@
 import { getAllFilesFrontMatter } from '@/lib/mdx'
-import { Client } from '@notionhq/client'
 import siteMetadata from '@/data/siteMetadata'
-import ListLayout from '@/layouts/PostSimple'
+import ListLayout from '@/layouts/ListLayout'
 import { PageSEO } from '@/components/SEO'
+import { Client } from '@notionhq/client'
 
 export const POSTS_PER_PAGE = 5
 
-const blogg = ({ data }) => {
-  return <pre>{JSON.stringify(data, null, 2)}</pre>
-}
+export async function getStaticProps() {
+  //console.log(getAllPostsNotion(process.env.NOTION_DB_ID));
+  //const posts = await getAllFilesFrontMatter('blog')
+  //const posts = await getAllPostsNotion(process.env.NOTION_DB_ID)
 
-export default function Blogg({ posts, initialDisplayPosts, pagination }) {
-  return (
-    <>
-      <PageSEO title={`Blog - ${siteMetadata.author}`} description={siteMetadata.description} />
-      <ListLayout
-        posts={posts}
-        initialDisplayPosts={initialDisplayPosts}
-        pagination={pagination}
-        title="All Posts"
-      />
-    </>
-  )
-}
-
-export const getStaticProps = async () => {
   const notion = new Client({
     auth: process.env.NOTION_SECRET,
   })
-  const posts1 = await getAllFilesFrontMatter('blog')
+
   const posts = await notion.databases.query({
     database_id: process.env.NOTION_DB_ID,
     filter: {
@@ -50,7 +36,6 @@ export const getStaticProps = async () => {
     summary: 'abcd',
     layout: 'PostSimple',
   }))
-
   const initialDisplayPosts = notiondata.slice(0, POSTS_PER_PAGE)
   const pagination = {
     currentPage: 1,
@@ -60,4 +45,16 @@ export const getStaticProps = async () => {
   return { props: { initialDisplayPosts, posts, pagination } }
 }
 
-//export default blogg
+export default function Blog({ posts, initialDisplayPosts, pagination }) {
+  return (
+    <>
+      <PageSEO title={`Blog - ${siteMetadata.author}`} description={siteMetadata.description} />
+      <ListLayout
+        posts={posts}
+        initialDisplayPosts={initialDisplayPosts}
+        pagination={pagination}
+        title="All Posts"
+      />
+    </>
+  )
+}
