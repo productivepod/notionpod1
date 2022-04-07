@@ -1,8 +1,9 @@
 const siteMetadata = {
-  title: 'Notion Pod',
-  author: 'Productive Pod',
-  headerTitle: 'Notion Pod',
-  description: 'A blog created with Next.js and Tailwind.css',
+  title: 'NotionPod',
+  author: 'ProductivePod',
+  headerTitle: 'NotionPod',
+  description:
+    'Helping to solve problems via Notion Tools, Tricks, Templates for your personal life, work and business.',
   language: 'en-us',
   theme: 'system', // system, dark or light
   siteUrl: 'https://tailwind-nextjs-starter-blog.vercel.app',
